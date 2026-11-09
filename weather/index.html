@@ -1,0 +1,623 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkyCast | Weather App</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #ffffff;
+}
+
+body {
+  min-height: 100vh;
+  padding: 35px 16px;
+  background:
+    radial-gradient(ellipse at 15% 15%, #526cbb 0%, transparent 40%),
+    radial-gradient(ellipse at 90% 85%, #663f98 0%, transparent 38%),
+    linear-gradient(135deg, #10172f, #202950 55%, #11172e);
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.logo span {
+  color: #86d9ff;
+}
+
+.tagline {
+  color: #c2cce7;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.search {
+  display: flex;
+  gap: 9px;
+  width: min(100%, 360px);
+}
+
+.search input {
+  width: 100%;
+  min-width: 0;
+  padding: 13px 15px;
+  color: white;
+  background: #ffffff12;
+  border: 1px solid #ffffff30;
+  border-radius: 14px;
+  outline: none;
+  font-size: 14px;
+}
+
+.search input:focus {
+  border-color: #86d9ff;
+}
+
+.search input::placeholder {
+  color: #b9c3dd;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font: inherit;
+}
+
+.search button {
+  padding: 0 17px;
+  border-radius: 14px;
+  background: #8bdcff;
+  color: #14223d;
+  font-weight: 700;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.panel {
+  background: #ffffff0d;
+  border: 1px solid #ffffff1c;
+  border-radius: 26px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 60px #00000020;
+}
+
+.main-weather {
+  padding: 30px;
+}
+
+.location-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.location {
+  font-size: 25px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.date {
+  margin-top: 6px;
+  color: #bac7e6;
+  font-size: 14px;
+}
+
+.live {
+  font-size: 12px;
+  color: #9bf4d1;
+  background: #6ce8ba17;
+  border: 1px solid #6ce8ba40;
+  padding: 8px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 30px 0;
+}
+
+.condition {
+  color: #d5def6;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.temperature {
+  font-size: clamp(66px, 12vw, 100px);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -5px;
+}
+
+.feels {
+  margin-top: 12px;
+  color: #bfc9e6;
+  font-size: 14px;
+}
+
+.weather-icon {
+  font-size: clamp(80px, 15vw, 135px);
+  filter: drop-shadow(0 10px 25px #9cbdff35);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.stat {
+  background: #ffffff0b;
+  border: 1px solid #ffffff13;
+  padding: 18px;
+  border-radius: 18px;
+}
+
+.stat-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #bdc9e5;
+  font-size: 13px;
+}
+
+.stat-icon {
+  font-size: 20px;
+}
+
+.stat-value {
+  font-size: 23px;
+  font-weight: 700;
+  margin-top: 12px;
+  overflow-wrap: anywhere;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 28px 0 15px;
+}
+
+.forecast {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.day {
+  text-align: center;
+  padding: 20px 8px;
+  border-radius: 19px;
+  background: #ffffff0b;
+  border: 1px solid #ffffff13;
+}
+
+.day-name {
+  color: #d1daf0;
+  font-size: 13px;
+}
+
+.day-icon {
+  font-size: 33px;
+  margin: 15px 0;
+}
+
+.day-condition {
+  min-height: 32px;
+  color: #c2cce5;
+  font-size: 11px;
+}
+
+.day-temps {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.day-temps strong {
+  color: #fff;
+}
+
+.day-temps span {
+  color: #9ba9ca;
+}
+
+.message {
+  min-height: 22px;
+  margin: 16px 0 0;
+  color: #bfcce7;
+  font-size: 13px;
+  text-align: center;
+}
+
+footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 12px;
+  color: #aab8d7;
+}
+
+@media (max-width: 650px) {
+  body {
+    padding: 22px 12px;
+  }
+
+  header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .main-weather {
+    padding: 21px;
+  }
+
+  .location {
+    font-size: 20px;
+  }
+
+  .hero {
+    padding: 26px 0;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .stat-value {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .forecast {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .day:last-child {
+    grid-column: 1 / -1;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <header>
+    <div>
+      <div class="logo">☁ Sky<span>Cast</span></div>
+      <div class="tagline">A little clarity in every forecast.</div>
+    </div>
+
+    <form class="search" id="searchForm">
+      <input
+        id="cityInput"
+        type="text"
+        placeholder="Search a city..."
+        aria-label="City name"
+        autocomplete="off"
+        required
+      >
+      <button id="searchButton" type="submit">Search</button>
+    </form>
+  </header>
+
+  <main class="panel main-weather">
+    <div class="location-row">
+      <div>
+        <h1 class="location" id="cityName">Loading weather...</h1>
+        <p class="date" id="currentDate">Please wait</p>
+      </div>
+      <span class="live">● LIVE WEATHER</span>
+    </div>
+
+    <section class="hero">
+      <div>
+        <p class="condition" id="condition">Getting conditions...</p>
+        <div class="temperature" id="temperature">--°</div>
+        <p class="feels" id="feels">Feels like --°C</p>
+      </div>
+      <div class="weather-icon" id="weatherIcon">🌤️</div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-top">
+          <span class="stat-icon">💧</span>
+          <span>Humidity</span>
+        </div>
+        <div class="stat-value" id="humidity">--%</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-top">
+          <span class="stat-icon">💨</span>
+          <span>Wind speed</span>
+        </div>
+        <div class="stat-value" id="wind">-- km/h</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-top">
+          <span class="stat-icon">🌧️</span>
+          <span>Precipitation</span>
+        </div>
+        <div class="stat-value" id="rain">-- mm</div>
+      </div>
+    </section>
+
+    <p class="message" id="message" role="status">
+      Connecting to the weather service...
+    </p>
+  </main>
+
+  <h2 class="section-title">The next 5 days</h2>
+  <section class="forecast" id="forecast">
+    <div class="day">Loading forecast...</div>
+  </section>
+
+  <footer>
+    Weather data provided by Open-Meteo · Built with HTML, CSS & JavaScript
+  </footer>
+
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+const form = $("searchForm");
+const cityInput = $("cityInput");
+const searchButton = $("searchButton");
+const message = $("message");
+
+function describeWeather(code, isDay = 1) {
+  if (code === 0) {
+    return [isDay ? "☀️" : "🌙", isDay ? "Clear sky" : "Clear night"];
+  }
+  if (code === 1) return ["🌤️", "Mainly clear"];
+  if (code === 2) return ["⛅", "Partly cloudy"];
+  if (code === 3) return ["☁️", "Overcast"];
+  if ([45, 48].includes(code)) return ["🌫️", "Foggy"];
+  if ([51, 53, 55].includes(code)) return ["🌦️", "Drizzle"];
+  if ([56, 57].includes(code)) return ["🌧️", "Freezing drizzle"];
+  if ([61, 63, 65].includes(code)) return ["🌧️", "Rain"];
+  if ([66, 67].includes(code)) return ["🌧️", "Freezing rain"];
+  if ([71, 73, 75, 77].includes(code)) return ["❄️", "Snow"];
+  if ([80, 81, 82].includes(code)) return ["🌦️", "Rain showers"];
+  if ([85, 86].includes(code)) return ["🌨️", "Snow showers"];
+  if ([95, 96, 99].includes(code)) return ["⛈️", "Thunderstorm"];
+  return ["🌡️", "Conditions unavailable"];
+}
+
+function showDate(timeZone) {
+  try {
+    return new Intl.DateTimeFormat("en-IN", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone
+    }).format(new Date());
+  } catch {
+    return new Date().toLocaleDateString();
+  }
+}
+
+function showForecast(daily) {
+  const forecast = $("forecast");
+  forecast.replaceChildren();
+
+  daily.time.forEach((date, i) => {
+    const [icon, description] = describeWeather(daily.weather_code[i]);
+
+    const dayName = i === 0
+      ? "Today"
+      : new Date(date + "T12:00:00").toLocaleDateString("en", {
+          weekday: "short"
+        });
+
+    const card = document.createElement("article");
+    card.className = "day";
+
+    const name = document.createElement("div");
+    name.className = "day-name";
+    name.textContent = dayName;
+
+    const symbol = document.createElement("div");
+    symbol.className = "day-icon";
+    symbol.textContent = icon;
+
+    const condition = document.createElement("div");
+    condition.className = "day-condition";
+    condition.textContent = description;
+
+    const temperatures = document.createElement("div");
+    temperatures.className = "day-temps";
+
+    const high = document.createElement("strong");
+    high.textContent = Math.round(daily.temperature_2m_max[i]) + "°";
+
+    const low = document.createElement("span");
+    low.textContent = Math.round(daily.temperature_2m_min[i]) + "°";
+
+    temperatures.append(high, low);
+    card.append(name, symbol, condition, temperatures);
+    forecast.append(card);
+  });
+}
+
+async function getWeather(city) {
+  searchButton.disabled = true;
+  searchButton.textContent = "...";
+  message.textContent = "Finding your city...";
+  $("forecast").replaceChildren();
+
+  const loading = document.createElement("div");
+  loading.className = "day";
+  loading.textContent = "Loading forecast...";
+  $("forecast").append(loading);
+
+  try {
+    const geoURL =
+      "https://geocoding-api.open-meteo.com/v1/search?name=" +
+      encodeURIComponent(city) +
+      "&count=10&language=en&format=json";
+
+    const geoResponse = await fetch(geoURL);
+
+    if (!geoResponse.ok) {
+      throw new Error("City search is temporarily unavailable.");
+    }
+
+    const geoData = await geoResponse.json();
+
+    if (!geoData.results || geoData.results.length === 0) {
+      throw new Error("City not found. Check the spelling and try again.");
+    }
+
+    // Prefer an exact city-name match when available.
+    const location = geoData.results.find(
+      item => item.name.toLowerCase() === city.toLowerCase()
+    ) || geoData.results[0];
+
+    message.textContent = "Fetching current weather...";
+
+    const weatherURL =
+      "https://api.open-meteo.com/v1/forecast?" +
+      `latitude=${location.latitude}` +
+      `&longitude=${location.longitude}` +
+      "&current=temperature_2m,relative_humidity_2m,apparent_temperature," +
+      "is_day,precipitation,weather_code,wind_speed_10m" +
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min" +
+      "&forecast_days=5&timezone=auto";
+
+    const weatherResponse = await fetch(weatherURL);
+
+    if (!weatherResponse.ok) {
+      throw new Error("Weather data is unavailable right now.");
+    }
+
+    const data = await weatherResponse.json();
+
+    if (!data.current || !data.daily) {
+      throw new Error("The weather service returned incomplete data.");
+    }
+
+    const current = data.current;
+    const [icon, description] = describeWeather(
+      current.weather_code,
+      current.is_day
+    );
+
+    $("cityName").textContent =
+      `${location.name}, ${location.country}`;
+
+    $("currentDate").textContent = showDate(data.timezone);
+
+    $("condition").textContent = description;
+
+    $("temperature").textContent =
+      Math.round(current.temperature_2m) + "°";
+
+    $("feels").textContent =
+      `Feels like ${Math.round(current.apparent_temperature)}°C`;
+
+    $("weatherIcon").textContent = icon;
+
+    $("humidity").textContent =
+      current.relative_humidity_2m + "%";
+
+    $("wind").textContent =
+      Math.round(current.wind_speed_10m) + " km/h";
+
+    $("rain").textContent =
+      current.precipitation + " mm";
+
+    showForecast(data.daily);
+
+    message.textContent =
+      `Weather updated · Local time: ${current.time.replace("T", " ")}`;
+
+  } catch (error) {
+    message.textContent =
+      error.message ||
+      "Unable to load weather. Check your internet connection.";
+
+    $("forecast").replaceChildren();
+
+    const errorCard = document.createElement("div");
+    errorCard.className = "day";
+    errorCard.textContent = "Forecast unavailable";
+    $("forecast").append(errorCard);
+
+  } finally {
+    searchButton.disabled = false;
+    searchButton.textContent = "Search";
+  }
+}
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const city = cityInput.value.trim();
+
+  if (!city) {
+    message.textContent = "Please enter a city name.";
+    return;
+  }
+
+  getWeather(city);
+});
+
+// Load a default city when the app opens.
+getWeather("Kolkata");
+</script>
+</body>
+</html>
